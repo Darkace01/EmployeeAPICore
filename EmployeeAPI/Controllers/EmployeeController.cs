@@ -32,7 +32,7 @@ namespace EmployeeAPI.Controllers
                 return Ok(response);
             response = GetEmployeeResponseAll(employee);
             return Ok(response);
-            }
+        }
 
         // GET: api/Employee/5
         [HttpGet("{id}")]
@@ -130,10 +130,10 @@ namespace EmployeeAPI.Controllers
                 LastName = emp.LastName,
                 HiredDate = emp.HiredDate,
             };
-            if(emp.EmployeeTasks != null && emp.EmployeeTasks.Any())
+            if (emp.EmployeeTasks != null && emp.EmployeeTasks.Any())
             {
                 var employeeTask = new List<EmployeeTaskBasicResponseDTO>();
-                foreach(var task in emp.EmployeeTasks)
+                foreach (var task in emp.EmployeeTasks)
                 {
                     employeeTask.Add(
                         new EmployeeTaskBasicResponseDTO
@@ -147,7 +147,7 @@ namespace EmployeeAPI.Controllers
                 }
             }
             return employ;
-            }
+        }
         private List<EmployeeBasicResponseDTO> GetEmployeeResponseAll(List<Employee> employees)
         {
             var result = new List<EmployeeBasicResponseDTO>();

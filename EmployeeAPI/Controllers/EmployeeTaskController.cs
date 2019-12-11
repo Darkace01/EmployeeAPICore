@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EmployeeAPI.Data;
 using EmployeeAPI.Model;
+using EmployeeAPI.DTO;
 
 namespace EmployeeAPI.Controllers
 {
@@ -25,7 +26,12 @@ namespace EmployeeAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeTask>>> GetEmployeeTask()
         {
-            return await _context.EmployeeTask.Include(e => e.Employee).ToListAsync();
+            var response = new List<EmployeeTaskBasicResponseDTO>();
+            var employeeTask = await _context.EmployeeTask.Include(e => e.Employee).ToListAsync();
+            if (employeeTask == null || !employeeTask.Any())
+                return Ok(response);
+            response = GetEmployeeTaskResponseAll(employeeTask);
+            return Ok(response);
         }
 
         // GET: api/EmployeeTask/5
@@ -121,5 +127,30 @@ namespace EmployeeAPI.Controllers
         {
             return _context.EmployeeTask.Any(e => e.Id == id);
         }
+
+        private EmployeeTaskBasicResponseDTO GetEmployeeTaskResponse(EmployeeTask emp)
+        {
+            var employ = new EmployeeTaskBasicResponseDTO
+            {
+                Id = emp.Id,
+                Dealine = emp.Dealine,
+                Name = emp.Name,
+                StartTime = emp.StartTime,
+                Employee = emp.Employee,
+                EmployeeId = emp.EmployeeId
+            };
+            
+            return employ;
+        }
+        private List<EmployeeTaskBasicResponseDTO> GetEmployeeTaskResponseAll(List<EmployeeTask> employeeTask)
+        {
+            var result = new List<EmployeeTaskBasicResponseDTO>();
+            foreach (var item in employeeTask)
+            {
+                result.Add(GetEmployeeTaskResponse(item));
+            }
+            return result;
+        }
+
     }
 }
