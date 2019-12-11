@@ -73,6 +73,10 @@ namespace EmployeeAPI.Controllers
                     throw;
                 }
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
 
             return Ok(employee);
         }

@@ -42,10 +42,21 @@ namespace EmployeeAPI.Controllers
             return employeeTask;
         }
 
+        [HttpGet("byEmployeeId/{id}")]
+        public async Task<ActionResult<IEnumerable<EmployeeTask>>> GetEmployeeTaskByEmployeeId(int id)
+        {
+            var employeeTask = await _context.EmployeeTask.Where(e => e.EmployeeId == id).ToListAsync();
+            return employeeTask;
+        }
+
         // PUT: api/EmployeeTask/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployeeTask(int id, EmployeeTask employeeTask)
         {
+            if (employeeTask == null)
+                return BadRequest("Request is null");
+            if (!ModelState.IsValid)
+                return BadRequest("Data Validation error!");
             if (id != employeeTask.Id)
             {
                 return BadRequest();
@@ -68,6 +79,10 @@ namespace EmployeeAPI.Controllers
                     throw;
                 }
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
 
             return Ok(employeeTask);
         }
@@ -76,6 +91,10 @@ namespace EmployeeAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<EmployeeTask>> PostEmployeeTask(EmployeeTask employeeTask)
         {
+            if (employeeTask == null)
+                return BadRequest("Request is null");
+            if (!ModelState.IsValid)
+                return BadRequest("Data Validation error!");
             _context.EmployeeTask.Add(employeeTask);
             await _context.SaveChangesAsync();
 
