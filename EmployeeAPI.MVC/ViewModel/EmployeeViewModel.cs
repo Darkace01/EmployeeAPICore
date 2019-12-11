@@ -35,7 +35,7 @@ namespace EmployeeAPI.MVC.ViewModel
         public DateTime StartTime { get; set; }
         public DateTime Dealine { get; set; }
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        //public Employee Employee { get; set; }
     }
     public class Employee
     {

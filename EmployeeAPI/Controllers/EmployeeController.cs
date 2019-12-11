@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EmployeeAPI.Data;
 using EmployeeAPI.Model;
+using EmployeeAPI.DTO;
 
 namespace EmployeeAPI.Controllers
 {
@@ -25,8 +26,13 @@ namespace EmployeeAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
         {
-            return await _context.Employee.Include(s => s.EmployeeTasks).ToListAsync();
-        }
+            var response = new List<EmployeeBasicResponseDTO>();
+            var employee = await _context.Employee.Include(s => s.EmployeeTasks).ToListAsync();
+            if (employee == null || !employee.Any())
+                return Ok(response);
+            response = GetEmployeeResponseAll(employee);
+            return Ok(response);
+            }
 
         // GET: api/Employee/5
         [HttpGet("{id}")]
@@ -114,6 +120,42 @@ namespace EmployeeAPI.Controllers
         private bool EmployeeExists(int id)
         {
             return _context.Employee.Any(e => e.Id == id);
+        }
+        private EmployeeBasicResponseDTO GetEmployeeResponse(Employee emp)
+        {
+            var employ = new EmployeeBasicResponseDTO
+            {
+                Id = emp.Id,
+                FirstName = emp.FirstName,
+                LastName = emp.LastName,
+                HiredDate = emp.HiredDate,
+            };
+            if(emp.EmployeeTasks != null && emp.EmployeeTasks.Any())
+            {
+                var employeeTask = new List<EmployeeTaskBasicResponseDTO>();
+                foreach(var task in emp.EmployeeTasks)
+                {
+                    employeeTask.Add(
+                        new EmployeeTaskBasicResponseDTO
+                        {
+                            Id = task.Id,
+                            Name = task.Name,
+                            Dealine = task.Dealine,
+                            StartTime = task.StartTime,
+                            EmployeeId = task.EmployeeId
+                        });
+                }
+            }
+            return employ;
+            }
+        private List<EmployeeBasicResponseDTO> GetEmployeeResponseAll(List<Employee> employees)
+        {
+            var result = new List<EmployeeBasicResponseDTO>();
+            foreach (var item in employees)
+            {
+                result.Add(GetEmployeeResponse(item));
+            }
+            return result;
         }
     }
 }
